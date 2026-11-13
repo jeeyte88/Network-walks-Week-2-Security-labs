@@ -125,5 +125,179 @@ The WHOIS lookup provided useful information about the domain's registration and
 From a cybersecurity perspective, WHOIS information helps security professionals understand a domain's registration details, hosting infrastructure, and publicly available technical information before conducting further reconnaissance activities.
 
 **Screenshot Evidence**
+<img width="1918" height="543" alt="image" src="1-whois.png" />
 
 *Figure 1: Performing a WHOIS lookup on networkwalks.com using Kali Linux to collect domain registration and DNS information.*
+
+
+## Tool 2: WhatWeb – Website Fingerprinting
+
+### Objective
+
+The objective of this activity was to identify the technologies and web applications running on `networkwalks.com`. I used WhatWeb in Kali Linux to gather information about the website's web server, content management system, frameworks, cookies, IP address, and other publicly detectable technologies.
+
+### Results and Observations
+
+After executing the WhatWeb command, I identified several technologies and details associated with the `networkwalks.com` website.
+
+The target domain initially returned an HTTP response of **301 Moved Permanently**, which redirected the connection to its HTTPS version. The secure HTTPS address then returned a **200 OK** response, indicating that the website was accessible.
+
+The scan identified **Apache** as the web server and revealed the IP address **192.232.216.135**, with the hosting location detected as the United States.
+
+WhatWeb also detected **WordPress 7.1.4** as the website's Content Management System (CMS), along with **Bootstrap 7.1.4** and **jQuery 3.7.1**. Additionally, it identified the WordPress Download Manager plugin version **3.3.76**.
+
+The website title appeared as **Networkwalks Academy**, and the scan revealed the publicly displayed email address **info@networkwalks.com**. Other detected technologies included HTML5, Open Graph Protocol, and Google Tag Manager.
+
+Finally, WhatWeb identified a cookie named `__wpdm_client`, which is associated with the WordPress Download Manager functionality.
+
+**Screenshot Evidence**
+<img width="1918" height="543" alt="image" src="2-whatweb.png" />
+
+
+## Tool 3: Nslookup – DNS Information Gathering
+
+### Objective
+
+The objective of this activity was to identify the IP address associated with the `networkwalks.com` domain using the `nslookup` command in Kali Linux.
+
+Command Used
+**nslookup networkwalks.com**
+
+
+# **Results and Observations**
+
+After executing the command, I received a DNS response showing that Google's public DNS server (`8.8.8.8`) handled the query. The DNS server was using port `53`, which is the standard port for DNS communication.
+
+The lookup returned a non-authoritative answer, resolving `networkwalks.com` to the IPv4 address **192.232.216.135**.
+
+# **Analysis and Security Relevance**
+
+DNS lookup is an important reconnaissance technique because it helps identify the IP addresses associated with a target domain. This information can support further authorized network assessments.
+
+The IP address obtained also matched the result from my previous WhatWeb scan, confirming consistency between the two findings.
+
+ **Screenshot Evidence**
+
+<img width="1918" height="543" alt="image" src="3-nslookup.png" />
+*Figure 3: Using Nslookup in Kali Linux to identify the DNS server and IP address associated with networkwalks.com.*
+
+
+
+
+# **Tool 4: cURL – HTTP Response Header Analysis**
+
+ **Objective**
+
+The objective of this activity was to examine the HTTP response headers of `networkwalks.com` using the cURL command in Kali Linux. This analysis helped identify information about the web server, website configuration, cookies, and security-related HTTP headers.
+
+ **Command Used**
+
+bash
+curl -I https://networkwalks.com
+
+ **Results and Observations**
+
+The cURL command returned an **HTTP/2 200 OK** response, indicating that the server successfully processed the HTTP request.
+
+The response headers identified **Apache** as the web server. The `Content-Type` header returned `text/html; charset=UTF-8`, indicating that the website serves HTML content encoded using UTF-8.
+
+The `Set-Cookie` header revealed a cookie named `__wpdm_client`, with the `Secure` and `HttpOnly` attributes enabled. These attributes help protect the cookie by ensuring it is transmitted over secure HTTPS connections and preventing direct access through client-side JavaScript.
+
+The `Link` header exposed the website's WordPress REST API endpoint (`/wp-json/`) and a reference to a specific WordPress page. This provides additional information about the website's underlying platform and API-related functionality.
+
+
+ **Analysis and Security Relevance**
+
+HTTP response headers provide useful information about how a website communicates with visitors and how its web server is configured.
+
+Identifying Apache as the web server helps security professionals understand the technologies used by the target website. The WordPress REST API reference also reveals information about the website's underlying content management system and available interfaces.
+
+The cookie attributes are important security observations because `Secure` and `HttpOnly` help reduce certain cookie-related risks. Reviewing security-related HTTP headers can also help identify potential areas for further configuration and security assessment.
+
+Overall, this activity demonstrated how cURL can be used during the reconnaissance phase to collect technical information from a website without downloading its entire content.
+
+ **Screenshot Evidence**
+<img width="1918" height="543" alt="image" src="4-curl.png" />
+*Figure 4: Using the cURL command in Kali Linux to inspect HTTP response headers and identify web server and security-related information.*
+
+
+
+
+# **Tool 5: WAFW00F – Web Application Firewall Detection**
+
+ **Objective**
+
+The objective of this activity was to identify whether a Web Application Firewall (WAF) was protecting the `networkwalks.com` website. I used WAFW00F in Kali Linux to examine the website's responses and identify the firewall technology, if present.
+
+ **Command Used**
+
+
+wafw00f networkwalks.com
+
+
+ **Results and Observations**
+
+After executing the WAFW00F command, the tool successfully checked the `networkwalks.com` website and identified that it is protected by **ModSecurity (SpiderLabs) Web Application Firewall**.
+
+The output confirmed that the website is behind a ModSecurity WAF, which acts as a security layer between incoming web requests and the web application. The tool also reported that it used **2 requests** to identify the firewall.
+
+This finding indicates that the website has a web application security mechanism designed to monitor and filter potentially harmful HTTP requests.
+
+ **Analysis and Security Relevance**
+
+A Web Application Firewall is an important security component that helps protect websites against different types of web-based attacks, including SQL injection and cross-site scripting (XSS).
+
+Identifying ModSecurity during reconnaissance provides useful information about the security technologies deployed by the website. It also demonstrates how WAFW00F can help security professionals identify protective mechanisms during an authorized security assessment.
+
+The presence of a WAF does not guarantee that a website is completely secure, but it provides an additional layer of protection against malicious web traffic.
+
+**Screenshot Evidence**
+<img width="1918" height="543" alt="image" src="5-waf00f.png" />
+
+
+
+
+
+#  **Tool 6: DNSRecon – DNS Enumeration**
+
+ **Objective**
+
+The objective of this activity was to gather DNS information associated with the `networkwalks.com` domain using DNSRecon in Kali Linux. The purpose was to identify available DNS records, including name servers, mail servers, IP addresses, and other DNS configuration details.
+
+ **Command Used**
+
+
+dnsrecon -d networkwalks.com
+
+
+
+ **Results and Observations**
+
+After executing the DNSRecon command, the tool started the enumeration process and collected several DNS records associated with `networkwalks.com`.
+
+During the scan, DNSRecon reported the **SOA (Start of Authority)** record pointing to `ns6135.hostgator.com`, with the associated IP address `50.87.144.87`. It also identified two name servers: `ns6135.hostgator.com` and `ns6136.hostgator.com`, with their respective IP addresses `50.87.144.87` and `192.232.216.131`.
+
+The scan also revealed the BIND DNS software version as **9.16.23-RH** for the identified DNS server addresses.
+
+Furthermore, DNSRecon identified an **MX (Mail Exchange)** record pointing to `mail.networkwalks.com`, which resolves to `192.232.216.135`. The **A record** also showed that `networkwalks.com` resolves to the same IPv4 address.
+
+The tool discovered two TXT records. One contained SPF information used for email sender verification, while the other contained a Google site verification value.
+
+Additionally, DNSRecon started enumerating **SRV (Service) records** and identified several autodiscover entries pointing to `cpanelemaildiscovery.cpanel.net` on port `443`.
+
+The scan also reported that there was no answer for the DNSSEC query, which is consistent with the unsigned DNSSEC status identified during the previous WHOIS lookup.
+
+ **Analysis and Security Relevance**
+
+DNS enumeration is an important reconnaissance technique because it helps security professionals understand the DNS infrastructure and services associated with a domain.
+
+Identifying name servers provides information about the domain's DNS hosting infrastructure, while MX records reveal the mail server configuration. TXT records can provide additional information about email security policies and domain verification.
+
+The discovery of the BIND software version also provides technical information about the DNS infrastructure that may be useful during further authorized security assessments. However, identifying a software version does not automatically indicate that it contains a vulnerability.
+
+The SPF record is particularly relevant because it helps identify the domain's email sender authorization policy. The SRV records also reveal information about services associated with email autodiscovery.
+
+Overall, this activity helped me understand how DNSRecon can collect different types of DNS records and reveal useful information about a domain's infrastructure during the footprinting and reconnaissance phase.
+
+ **Screenshot Evidence**
+<img width="1918" height="543" alt="image" src="6-Dnsrecord.png" />
